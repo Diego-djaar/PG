@@ -1,9 +1,10 @@
 #![feature(const_float_classify)]
 use camera::Camera;
 use point::Point;
-use vec::Vector3;
+use vec::Vector;
 
 mod camera;
+mod esfera;
 mod point;
 mod vec;
 

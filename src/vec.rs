@@ -3,11 +3,16 @@ use std::ops::Div;
 use std::ops::Mul;
 use std::ops::Sub;
 
+/// Verifica se um valor é próximo o suficiente de zero
+fn is_near_zero(val: f64) -> bool {
+    return val < 0.001 && val > -0.001;
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Matrix3x3 {
-    a: Vector3,
-    b: Vector3,
-    c: Vector3,
+    a: Vector,
+    b: Vector,
+    c: Vector,
 }
 
 impl Matrix3x3 {
@@ -17,9 +22,9 @@ impl Matrix3x3 {
         third: (f64, f64, f64),
     ) -> Self {
         Matrix3x3 {
-            a: Vector3::from_tuple(first),
-            b: Vector3::from_tuple(second),
-            c: Vector3::from_tuple(third),
+            a: Vector::from_tuple(first),
+            b: Vector::from_tuple(second),
+            c: Vector::from_tuple(third),
         }
     }
 
@@ -30,25 +35,25 @@ impl Matrix3x3 {
 
 /// 3 floats de 64 bits com algumas operações definidas, formando um espaço vetorial com produto escalar padrão.
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Vector3 {
+pub struct Vector {
     x: f64,
     y: f64,
     z: f64,
 }
 
-impl Vector3 {
-    pub const fn new(x: f64, y: f64, z: f64) -> Vector3 {
+impl Vector {
+    pub const fn new(x: f64, y: f64, z: f64) -> Vector {
         assert!(x.is_finite());
         assert!(y.is_finite());
         assert!(z.is_finite());
-        Vector3 { x, y, z }
+        Vector { x, y, z }
     }
 
-    pub fn from_tuple(value: (f64, f64, f64)) -> Vector3 {
+    pub fn from_tuple(value: (f64, f64, f64)) -> Vector {
         Self::new(value.0, value.1, value.2)
     }
 
-    pub fn from_slice(value: [f64; 3]) -> Vector3 {
+    pub fn from_slice(value: [f64; 3]) -> Vector {
         Self::new(value[0], value[1], value[2])
     }
 
@@ -60,7 +65,7 @@ impl Vector3 {
         todo!()
     }
 
-    pub fn cross_prod(self, other: Self) -> Vector3 {
+    pub fn cross_prod(self, other: Self) -> Vector {
         Self::new(
             self.y * other.z - self.z * other.y,
             self.z * other.x - self.x * other.z,
@@ -72,7 +77,7 @@ impl Vector3 {
         f64::sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
     }
 
-    pub fn normalize(self) -> Vector3 {
+    pub fn normalize(self) -> Vector {
         self / self.mag()
     }
 
@@ -87,43 +92,62 @@ impl Vector3 {
     pub fn get_z(&self) -> f64 {
         self.z
     }
+
+    pub fn zero() -> Vector {
+        Vector::new(0.0, 0.0, 0.0)
+    }
+
+    /// Cria uma base ortonormal que contém esse vetor
+    pub fn create_ortonormal_basis(self) -> (Vector, Vector, Vector) {
+        let vec1 = self.normalize();
+
+        // Agora, é preciso encontrar mais 2 vetores para fazer a base ortonormal
+        let vec2 = match Vector::new(vec1.get_y(), -vec1.get_x(), 0.0) {
+            x if x == Vector::zero() => Vector::new(0.0, vec1.get_z(), -vec1.get_y()),
+            x => x,
+        }
+        .normalize();
+        let vec3 = vec1.cross_prod(vec2).normalize();
+
+        (vec1, vec2, vec3)
+    }
 }
 
-impl Into<(f64, f64, f64)> for Vector3 {
+impl Into<(f64, f64, f64)> for Vector {
     fn into(self) -> (f64, f64, f64) {
         (self.x, self.y, self.z)
     }
 }
 
-impl Eq for Vector3 {}
+impl Eq for Vector {}
 
-impl Add for Vector3 {
-    type Output = Vector3;
-    fn add(self, rhs: Self) -> Vector3 {
-        Vector3::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+impl Add for Vector {
+    type Output = Vector;
+    fn add(self, rhs: Self) -> Vector {
+        Vector::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 }
 
-impl Mul<f64> for Vector3 {
-    type Output = Vector3;
+impl Mul<f64> for Vector {
+    type Output = Vector;
 
-    fn mul(self, rhs: f64) -> Vector3 {
-        Vector3::new(self.x * rhs, self.y * rhs, self.z * rhs)
+    fn mul(self, rhs: f64) -> Vector {
+        Vector::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 }
 
-impl Div<f64> for Vector3 {
-    type Output = Vector3;
+impl Div<f64> for Vector {
+    type Output = Vector;
 
-    fn div(self, rhs: f64) -> Vector3 {
-        Vector3::new(self.x / rhs, self.y / rhs, self.z / rhs)
+    fn div(self, rhs: f64) -> Vector {
+        Vector::new(self.x / rhs, self.y / rhs, self.z / rhs)
     }
 }
 
-impl Sub for Vector3 {
-    type Output = Vector3;
+impl Sub for Vector {
+    type Output = Vector;
 
-    fn sub(self, rhs: Self) -> Vector3 {
+    fn sub(self, rhs: Self) -> Vector {
         self + rhs * (-1.0f64)
     }
 }
@@ -134,11 +158,11 @@ mod tests {
 
     #[test]
     fn basic_dot_prod() {
-        let vec_zero = Vector3::new(0.0, 0.0, 0.0);
-        let vec1 = Vector3::new(1.0, 0.0, 0.0);
-        let vec2 = Vector3::new(0.0, 2.0, 0.0);
-        let vec3 = Vector3::new(3.0, 4.0, 1.0);
-        let vec4 = Vector3::new(0.0, 2.0, 2.0);
+        let vec_zero = Vector::new(0.0, 0.0, 0.0);
+        let vec1 = Vector::new(1.0, 0.0, 0.0);
+        let vec2 = Vector::new(0.0, 2.0, 0.0);
+        let vec3 = Vector::new(3.0, 4.0, 1.0);
+        let vec4 = Vector::new(0.0, 2.0, 2.0);
 
         assert_eq!(vec1.dot_prod(vec2), 0.0);
         assert_eq!(vec2.dot_prod(vec_zero), 0.0);
@@ -150,37 +174,54 @@ mod tests {
 
     #[test]
     fn basic_cross_prod() {
-        let vec1 = Vector3::new(3.0, 4.0, 5.0);
-        let vec2 = Vector3::new(6.0, 7.0, 8.0);
-        assert_eq!(vec1.cross_prod(vec2), Vector3::new(-3.0, 6.0, -3.0));
-        assert_eq!(vec2.cross_prod(vec1), Vector3::new(3.0, -6.0, 3.0));
+        let vec1 = Vector::new(3.0, 4.0, 5.0);
+        let vec2 = Vector::new(6.0, 7.0, 8.0);
+        assert_eq!(vec1.cross_prod(vec2), Vector::new(-3.0, 6.0, -3.0));
+        assert_eq!(vec2.cross_prod(vec1), Vector::new(3.0, -6.0, 3.0));
     }
 
     #[test]
     fn scalar_ops() {
-        let vec1 = Vector3::new(3.0, 4.0, 5.0);
-        let vec2 = Vector3::new(6.0, 7.0, 8.0);
-        assert_eq!(vec1 + vec2, Vector3::new(9.0, 11.0, 13.0));
-        assert_eq!(vec1 - vec2, Vector3::new(-3.0, -3.0, -3.0));
-        assert_eq!(vec1 * 2.5, Vector3::new(7.5, 10.0, 12.5));
+        let vec1 = Vector::new(3.0, 4.0, 5.0);
+        let vec2 = Vector::new(6.0, 7.0, 8.0);
+        assert_eq!(vec1 + vec2, Vector::new(9.0, 11.0, 13.0));
+        assert_eq!(vec1 - vec2, Vector::new(-3.0, -3.0, -3.0));
+        assert_eq!(vec1 * 2.5, Vector::new(7.5, 10.0, 12.5));
         assert_eq!(
             vec1 * (-3.0) - vec2 * (-0.5),
-            Vector3::new(-6.0, -8.5, -11.0)
+            Vector::new(-6.0, -8.5, -11.0)
         );
     }
 
     #[test]
     fn magnitude() {
-        let vec1 = Vector3::new(3.0, 4.0, 12.0);
+        let vec1 = Vector::new(3.0, 4.0, 12.0);
         assert_eq!(vec1.mag(), 13.0)
     }
 
     #[test]
     fn normalization() {
-        let vec1 = Vector3::new(3.0, 4.0, 12.0);
+        let vec1 = Vector::new(3.0, 4.0, 12.0);
         assert_eq!(
             vec1.normalize(),
-            Vector3::new(3.0 / 13.0, 4.0 / 13.0, 12.0 / 13.0)
+            Vector::new(3.0 / 13.0, 4.0 / 13.0, 12.0 / 13.0)
         )
+    }
+
+    #[test]
+    fn test_ortonormality() {
+        ortonormality(4.0, 5.0, 6.0);
+        ortonormality(0.0, 1.0, 0.0);
+        ortonormality(0.0, 0.0, 0.1);
+        ortonormality(0.0, 0.0, 100000.0);
+        ortonormality(27.0, 0.0, 00000.0);
+    }
+    fn ortonormality(x: f64, y: f64, z: f64) {
+        // std::env::set_var("RUST_BACKTRACE", "1");
+        let vecs_orto = Vector::new(x, y, z).create_ortonormal_basis();
+        // println!("{:?}", vecs_orto);
+        assert!(is_near_zero(vecs_orto.0.dot_prod(vecs_orto.1)));
+        assert!(is_near_zero(vecs_orto.1.dot_prod(vecs_orto.2)));
+        assert!(is_near_zero(vecs_orto.2.dot_prod(vecs_orto.0)));
     }
 }
