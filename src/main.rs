@@ -23,16 +23,22 @@ fn main() {
     let camera = Camera::new(
         Point::new(0.0, 0.0, 0.0),
         Point::new(10.0, 0.0, 0.0),
-        1000.0,
+        4000.0,
         Vector::new(0.0, 1.0, 0.0),
         h,
         v,
     );
 
     let esfera = Esfera {
-        centro: Point::new(800000.0, 0.0, 0.0),
+        centro: Point::new(1600.0, 300.0, 300.0),
+        raio: 100.0,
+        rgb: [255, 126, 255],
+    };
+
+    let esfera2 = Esfera {
+        centro: Point::new(1600.0, -400.0, -200.0),
         raio: 200.0,
-        rgb: [126, 126, 126],
+        rgb: [0, 126, 255],
     };
 
     // Agora, testar intersecções câmera-pixel-esfera com base no algorítimo
@@ -48,7 +54,10 @@ fn main() {
     let img_renderizada = phong::iluminar(
         img,
         camera,
-        vec![objetos::Objetos::Esfera(esfera)],
+        vec![
+            objetos::Objetos::Esfera(esfera),
+            objetos::Objetos::Esfera(esfera2),
+        ],
         vec![],
         centro_tela,
     );

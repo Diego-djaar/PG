@@ -27,11 +27,9 @@ pub fn iluminar(
 
     // Primeiro quadrante
     // Calcular ponto do pixel
-    let canto = centro_tela - base.1 - base.2
-        + base.1 / (Into::<f64>::into(w))
-        + base.2 / (Into::<f64>::into(h));
-    let mini_vec_hor = base.1 / Into::<f64>::into(w);
-    let mini_vec_vert = base.2 / Into::<f64>::into(h);
+    let canto = centro_tela - base.1 * w.into() - base.2 * h.into() + base.1 + base.2;
+    let mini_vec_hor = base.1;
+    let mini_vec_vert = base.2;
     for x in 0..w {
         for y in 0..h {
             let pixel_atual =
