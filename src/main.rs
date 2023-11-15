@@ -1,14 +1,12 @@
 #![feature(const_float_classify)]
 use camera::Camera;
-use image::Rgb;
 use image::RgbImage;
 use objetos::esfera::Esfera;
+use objetos::plano::Plano;
 use point::Point;
 use vec::Vector;
 
 use image;
-use image::io::Reader as ImageReader;
-use std::io::Cursor;
 
 mod camera;
 mod objetos;
@@ -47,6 +45,12 @@ fn main() {
         rgb: [255, 126, 126],
     };
 
+    let plano = Plano {
+        ponto: Point::new(1600.0, 0.0, 0.0),
+        vetor_normal: Vector::new(1.0, 1.0, 0.0),
+        rgb: [255, 255, 255],
+    };
+
     // Agora, testar intersecções câmera-pixel-esfera com base no algorítimo
 
     // Encontrar centro da tela
@@ -64,6 +68,7 @@ fn main() {
             objetos::Objetos::Esfera(esfera),
             objetos::Objetos::Esfera(esfera2),
             objetos::Objetos::Esfera(esfera3),
+            objetos::Objetos::Plano(plano),
         ],
         vec![],
         centro_tela,
@@ -75,6 +80,8 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    use image::Rgb;
+
     use super::*;
 
     #[test]

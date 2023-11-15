@@ -4,11 +4,11 @@ use std::ops::Mul;
 use std::ops::Sub;
 
 /// Verifica se um valor é próximo o suficiente de zero
-fn is_near_zero(val: f64) -> bool {
+pub fn is_near_zero(val: f64) -> bool {
     return val < 0.001 && val > -0.001;
 }
 
-fn vec_near_null(val: Vector) -> bool {
+pub fn vec_near_null(val: Vector) -> bool {
     is_near_zero(val.get_x()) && is_near_zero(val.get_y()) && is_near_zero(val.get_z())
 }
 

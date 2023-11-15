@@ -5,6 +5,7 @@ use crate::objetos;
 use crate::objetos::Fontes;
 use crate::objetos::Objetos;
 use crate::point::Point;
+use crate::vec;
 use crate::vec::Vector;
 
 use image;
@@ -52,7 +53,7 @@ pub fn iluminar_pixel(
     for objeto in objetos {
         let cor_dist: Option<(Rgb<u8>, f64)> = match objeto {
             Objetos::Esfera(esfera) => esfera_interseccao(pixel, centro, esfera),
-            Objetos::Plano(_) => todo!(),
+            Objetos::Plano(plano) => plano_interseccao(pixel, centro, plano),
         };
         max = match cor_dist {
             Some(cor_dist) => match max {
@@ -67,6 +68,25 @@ pub fn iluminar_pixel(
         Some(max) => max.0,
         None => Rgb([0, 0, 0]),
     };
+}
+
+fn plano_interseccao(
+    pixel: Point,
+    centro: Point,
+    plano: &objetos::plano::Plano,
+) -> Option<(Rgb<u8>, f64)> {
+    let line_unit = (pixel - centro).normalize();
+    if vec::is_near_zero(line_unit.dot_prod(plano.vetor_normal)) {
+        // println!("alinhamento perfeito");
+        return None;
+    }
+    let d = ((plano.ponto - centro).dot_prod(plano.vetor_normal))
+        / (line_unit.dot_prod(plano.vetor_normal));
+    if d > 0.0 {
+        return Some((Rgb(plano.rgb), d.powi(2)));
+    } else {
+        return None;
+    }
 }
 
 fn esfera_interseccao(
