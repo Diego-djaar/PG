@@ -5,7 +5,7 @@ use std::ops::Sub;
 ///
 /// Apenas muda como usar nas fórmulas
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Point(Vector);
+pub struct Point(pub Vector);
 
 impl Point {
     pub fn new(x: f64, y: f64, z: f64) -> Point {
