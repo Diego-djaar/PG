@@ -48,53 +48,41 @@ pub fn iluminar_pixel(
     objetos: &Vec<Objetos>,
     fontes: &Vec<Fontes>,
 ) -> Rgb<u8> {
+    let mut max = None;
     for objeto in objetos {
-        let cor: Option<Rgb<u8>> = match objeto {
-            Objetos::Esfera(esfera) => esfera_interseccao_delta(pixel, centro, esfera),
+        let cor_dist: Option<(Rgb<u8>, f64)> = match objeto {
+            Objetos::Esfera(esfera) => esfera_interseccao(pixel, centro, esfera),
             Objetos::Plano(_) => todo!(),
         };
-        if cor.is_some() {
-            return cor.unwrap();
-        }
+        max = match cor_dist {
+            Some(cor_dist) => match max {
+                None => Some(cor_dist),
+                Some(max) if cor_dist.1 < max.1 => Some(cor_dist),
+                _ => max,
+            },
+            None => max,
+        };
     }
-    return Rgb([0, 0, 0]);
+    return match max {
+        Some(max) => max.0,
+        None => Rgb([0, 0, 0]),
+    };
 }
 
-fn esfera_interseccao_delta(
+fn esfera_interseccao(
     pixel: Point,
     centro: Point,
     esfera: &objetos::esfera::Esfera,
-) -> Option<Rgb<u8>> {
-    // Detectar se a semirreta do centro até o pixel, depois do pixel intersecta a esfera
-    let vec = pixel - centro;
-    // centro + v*t ~= esfera.centro; Logo:
-
-    // Honestamente, isso tá uma merda
-    // Vou fazer do outro jeito
-    let e = esfera.centro.0.get_x();
-    let x = centro.0.get_x();
-    let v = vec.get_x();
-    let y = centro.0.get_y();
-    let u = vec.get_y();
-    let f = esfera.centro.0.get_y();
-    let z = centro.0.get_z();
-    let w = vec.get_z();
-    let g = esfera.centro.0.get_z();
-    let r = esfera.raio;
-
-    let delta = 4.0 * (e * v + f * u + g * w - u * y - v * x - w * z).powi(2)
-        - 4.0
-            * (u.powi(2) + v.powi(2) + w.powi(2))
-            * (e.powi(2) - 2.0 * e * x + f.powi(2) - 2.0 * f * y + g.powi(2)
-                - 2.0 * g * z
-                - r.powi(2)
-                + x.powi(2)
-                + y.powi(2)
-                + z.powi(2));
-
-    match delta {
-        d if d > 0.0 => Some(Rgb(esfera.rgb)),
-        d if d <= 0.0 => None,
-        _ => unreachable!(),
+) -> Option<(Rgb<u8>, f64)> {
+    let k = esfera.centro - centro;
+    let k_proj = k.projection(pixel - centro);
+    let d = k_proj - k;
+    let r2 = esfera.raio.powi(2);
+    if d.mag_sqrd() >= r2 {
+        return None;
     }
+    let f_len = r2 - d.mag_sqrd();
+    let f = (centro - pixel).normalize() * f_len.sqrt();
+    let x = k_proj + f;
+    return Some((Rgb(esfera.rgb), x.mag_sqrd()));
 }

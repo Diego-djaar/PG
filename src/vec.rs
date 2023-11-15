@@ -8,6 +8,10 @@ fn is_near_zero(val: f64) -> bool {
     return val < 0.001 && val > -0.001;
 }
 
+fn vec_near_null(val: Vector) -> bool {
+    is_near_zero(val.get_x()) && is_near_zero(val.get_y()) && is_near_zero(val.get_z())
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Matrix3x3 {
     a: Vector,
@@ -77,6 +81,10 @@ impl Vector {
         f64::sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
     }
 
+    pub fn mag_sqrd(self) -> f64 {
+        self.x * self.x + self.y * self.y + self.z * self.z
+    }
+
     pub fn normalize(self) -> Vector {
         self / self.mag()
     }
@@ -110,6 +118,10 @@ impl Vector {
         let vec3 = vec1.cross_prod(vec2).normalize();
 
         (vec1, vec2, vec3)
+    }
+
+    pub fn projection(self, other: Vector) -> Vector {
+        other * self.dot_prod(other) / other.mag_sqrd()
     }
 }
 
@@ -223,5 +235,19 @@ mod tests {
         assert!(is_near_zero(vecs_orto.0.dot_prod(vecs_orto.1)));
         assert!(is_near_zero(vecs_orto.1.dot_prod(vecs_orto.2)));
         assert!(is_near_zero(vecs_orto.2.dot_prod(vecs_orto.0)));
+    }
+
+    #[test]
+    fn projection() {
+        let vec1 = Vector::new(1.0, 1.0, 1.0);
+        let vec2 = Vector::new(1.0, 0.0, 0.0);
+        let vec3 = Vector::new(137.0, -4.0, 666.0);
+        let vec4 = Vector::new(420.0, 69.0, 3.14);
+        assert!(vec1.projection(vec2) == vec2);
+        assert!(vec2.projection(vec1) == Vector::new(1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0));
+        assert!(vec_near_null(
+            vec3.projection(vec4)
+                - Vector::new(137.600499633551443, 22.605796368369166, 1.028727544879408)
+        ));
     }
 }

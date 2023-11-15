@@ -30,15 +30,21 @@ fn main() {
     );
 
     let esfera = Esfera {
-        centro: Point::new(1600.0, 300.0, 300.0),
-        raio: 100.0,
+        centro: Point::new(1600.0, 150.0, 0.0),
+        raio: 200.0,
         rgb: [255, 126, 255],
     };
 
     let esfera2 = Esfera {
-        centro: Point::new(1600.0, -400.0, -200.0),
+        centro: Point::new(1600.0, 0.0, 0.0),
         raio: 200.0,
         rgb: [0, 126, 255],
+    };
+
+    let esfera3 = Esfera {
+        centro: Point::new(1600.0, 0.0, 200.0),
+        raio: 300.0,
+        rgb: [255, 126, 126],
     };
 
     // Agora, testar intersecções câmera-pixel-esfera com base no algorítimo
@@ -57,6 +63,7 @@ fn main() {
         vec![
             objetos::Objetos::Esfera(esfera),
             objetos::Objetos::Esfera(esfera2),
+            objetos::Objetos::Esfera(esfera3),
         ],
         vec![],
         centro_tela,
