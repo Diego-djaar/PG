@@ -40,7 +40,7 @@ fn main() {
     };
 
     let esfera3 = Esfera {
-        centro: Point::new(1600.0, 0.0, 200.0),
+        centro: Point::new(1700.0, 0.0, 200.0),
         raio: 300.0,
         rgb: [255, 126, 126],
     };
