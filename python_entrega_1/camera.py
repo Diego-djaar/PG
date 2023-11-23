@@ -4,18 +4,18 @@ import numpy as np
 
 class Camera:
     """Define a camera"""
-    # position_c
-    # point_view_m
-    # base_ortonormal_wvu
+    position_c: np.ndarray[float]
+    point_view_m: np.ndarray[float]
+    base_ortonormal_wvu: tuple[np.ndarray[float],np.ndarray[float],np.ndarray[float]]
     # up_vector
     distancia_camera_tela: float
     altura_tela: int
     largura_tela: int
 
     def __init__(
-        self: np.NDArray[float],
-        pos: np.NDArray[float],
-        view_point: np.NDArray[float],
+        self: np.ndarray[float],
+        pos: np.ndarray[float],
+        view_point: np.ndarray[float],
         dist: float,
         vector_up,
         altura_tela: int,
