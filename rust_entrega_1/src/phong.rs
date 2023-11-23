@@ -14,7 +14,7 @@ use image::ImageBuffer;
 use std::io::Cursor;
 
 /// Faz a renderização do modelo de Phong
-pub fn iluminar(
+pub fn renderizar_imagem(
     mut img: ImageBuffer<Rgb<u8>, Vec<u8>>,
     camera: Camera,
     objetos: Vec<Objetos>,
@@ -35,7 +35,7 @@ pub fn iluminar(
         for y in 0..h {
             let pixel_atual =
                 canto + mini_vec_hor * x.into() * 2.0 + mini_vec_vert * y.into() * 2.0;
-            let luz = iluminar_pixel(pixel_atual, camera_pos, &objetos, &fontes);
+            let luz = colorir_pixel(pixel_atual, camera_pos, &objetos, &fontes);
             img.put_pixel(x, y, luz);
         }
     }
@@ -43,7 +43,7 @@ pub fn iluminar(
 }
 
 /// Faz o algorítimo em um pixel específico
-pub fn iluminar_pixel(
+pub fn colorir_pixel(
     pixel: Point,
     centro: Point,
     objetos: &Vec<Objetos>,

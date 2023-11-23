@@ -61,7 +61,7 @@ fn main() {
     println!("{:?}", camera);
 
     // iluminação de Phong
-    let img_renderizada = phong::iluminar(
+    let img_renderizada = phong::renderizar_imagem(
         img,
         camera,
         vec![

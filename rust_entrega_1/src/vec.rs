@@ -12,30 +12,30 @@ pub fn vec_near_null(val: Vector) -> bool {
     is_near_zero(val.get_x()) && is_near_zero(val.get_y()) && is_near_zero(val.get_z())
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Matrix3x3 {
-    a: Vector,
-    b: Vector,
-    c: Vector,
-}
+// #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+// pub struct Matrix3x3 {
+//     a: Vector,
+//     b: Vector,
+//     c: Vector,
+// }
 
-impl Matrix3x3 {
-    pub fn from_rows(
-        first: (f64, f64, f64),
-        second: (f64, f64, f64),
-        third: (f64, f64, f64),
-    ) -> Self {
-        Matrix3x3 {
-            a: Vector::from_tuple(first),
-            b: Vector::from_tuple(second),
-            c: Vector::from_tuple(third),
-        }
-    }
+// impl Matrix3x3 {
+//     pub fn from_rows(
+//         first: (f64, f64, f64),
+//         second: (f64, f64, f64),
+//         third: (f64, f64, f64),
+//     ) -> Self {
+//         Matrix3x3 {
+//             a: Vector::from_tuple(first),
+//             b: Vector::from_tuple(second),
+//             c: Vector::from_tuple(third),
+//         }
+//     }
 
-    pub fn to_rows(self) -> ((f64, f64, f64), (f64, f64, f64), (f64, f64, f64)) {
-        (self.a.into(), self.b.into(), self.c.into())
-    }
-}
+//     pub fn to_rows(self) -> ((f64, f64, f64), (f64, f64, f64), (f64, f64, f64)) {
+//         (self.a.into(), self.b.into(), self.c.into())
+//     }
+// }
 
 /// 3 floats de 64 bits com algumas operações definidas, formando um espaço vetorial com produto escalar padrão.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -65,9 +65,9 @@ impl Vector {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
-    pub fn ext_prod(self, other: Self) -> Matrix3x3 {
-        todo!()
-    }
+    // pub fn ext_prod(self, other: Self) -> Matrix3x3 {
+    //     todo!()
+    // }
 
     pub fn cross_prod(self, other: Self) -> Vector {
         Self::new(
