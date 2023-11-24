@@ -13,7 +13,7 @@ class Camera:
     largura_tela: int
 
     def __init__(
-        self: np.ndarray[float],
+        self,
         pos: np.ndarray[float],
         view_point: np.ndarray[float],
         dist: float,
@@ -28,8 +28,8 @@ class Camera:
         # vec2 = (up_vector - (up_vector.projection(vec1))).normalize()
         # vec3 = vec1.cross_prod(vec2).normalize()
         
-        vec_u = np.cross(vector_up, vec_w)
-        vec_v = np.cross(vec_w, vec_u)
+        vec_v = np.cross(vector_up, vec_w)
+        vec_u = np.cross(vec_w, vec_v)
         base_ortonormal_wvu = (vec_w,vec_u,vec_v) # Base ortonormal
 
         self.position_c = pos
